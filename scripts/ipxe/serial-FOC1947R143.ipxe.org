@@ -1,4 +1,4 @@
 #!ipxe
 echo
-echo Booting Skywarp Mini ISO 6.0.0 from ISO for ${initiator}
-chain --replace --autofree  ${boot-url}ncs5k-mini-official
+echo Booting NCS Mini ISO 6.X.X from ISO for ${initiator}
+chain --replace --autofree  ${boot-url}ncs5k-mini-iso.iso
