@@ -1,0 +1,139 @@
+#!ipxe
+
+# Variables are specified in boot.ipxe.cfg
+
+# Some menu defaults
+set menu-timeout 30000
+set submenu-timeout ${menu-timeout}
+isset ${menu-default} || set menu-default exit
+
+###################### MAIN MENU ####################################
+
+:start
+menu iPXE boot menu for ${initiator}
+item --gap --             ------------------------- XRV9K Boot Menu ------------------------------
+item --key a sunstone-mini		Boot xrv9k Mini 6.0.0 ISO
+item --key b sunstone-full		Boot xrv9k Full 6.0.0 ISO
+item --key c sunstone-latest		Boot xrv9k Mini 6.1.1 ISO Latest build
+item --key d sunstone-disk		Boot xrv9k from local disk
+item --gap --             ------------------------ NCS5000 Boot Menu -----------------------------
+item --key e ncs5000-6.2.2		Boot ncs-5000 Mini 6.2.2 ISO
+item --key f ncs5000-6.2.25		Boot ncs-5000 Mini 6.2.25 ISO
+item --key g ncs5000-6.2.3		Boot ncs-5000 Mini 6.2.3 ISO
+item --key h ncs5000-gold		Boot ncs-5000 Golden ISO (6.2.3 based)
+item --gap --             ------------------------ NCS5500 Boot Menu -----------------------------
+item --key i ncs5500-6.2.2		Boot ncs-5500 Mini 6.2.2 ISO
+item --key j ncs5500-6.2.25		Boot ncs-5500 Mini 6.2.25 ISO
+item --key k ncs5500-6.2.3              Boot ncs-5500 Mini 6.2.3 ISO
+item --gap --             ------------------------- Advanced options -----------------------------
+item --key l config						Configure settings
+item shell										Drop to iPXE shell
+item reboot										Reboot System
+item
+item --key x exit         		Exit iPXE and continue BIOS boot
+choose --timeout ${menu-timeout} --default ${menu-default} selected || goto cancel
+set menu-timeout 0
+goto ${selected}
+
+:cancel
+echo You cancelled the menu, dropping you to a shell
+
+:shell
+echo Type 'exit' to get the back to the menu
+shell
+set menu-timeout 0
+set submenu-timeout 0
+goto start
+
+:failed
+echo Booting failed, dropping to shell
+goto shell
+
+:reboot
+reboot
+
+:exit
+exit 0
+
+:config
+config
+goto start
+
+:back
+set submenu-timeout 0
+clear submenu-default
+goto start
+
+############ MAIN MENU ITEMS ############
+
+:sunstone-mini
+echo Booting XRV9K Mini 6.0.0 from ISO for ${initiator}
+sanboot ${sanboot-url}xrv9k-mini-x.iso-6.0.0 ||
+sanboot ${sanboot-url6}xrv9k-mini-x.iso-6.0.0 || goto failed
+goto start
+
+:sunstone-full
+echo Booting XRV9K Full 6.0.0 from ISO for ${initiator}
+sanboot ${sanboot-url}xrv9k-fullk9-x.iso-6.0.0 ||
+sanboot ${sanboot-url6}xrv9k-fullk9-x.iso-6.0.0 || goto failed
+goto start
+
+:sunstone-latest
+echo Booting XRV9K Mini 6.1.1 latest developer release from ISO for ${initiator}
+sanboot ${sanboot-url}xrv9k-mini-latest.iso ||
+sanboot ${sanboot-url6}xrv9k-mini-latest.iso || goto failed
+goto start
+
+:ncs5000-6.2.2
+echo
+echo Booting Skywarp Mini ISO 6.1.1 for ${initiator}
+boot ${boot-url}${iso-dir}ncs5k-mini-x-6.2.2.iso ||
+boot ${boot-url6}${iso-dir}ncs5k-mini-x-6.2.2.iso || goto failed
+goto start
+
+:ncs5000-6.2.25
+echo
+echo Booting Skywarp Mini ISO 6.2.25 for ${initiator}
+boot ${boot-url}${iso-dir}ncs5k-mini-x-6.2.25.iso ||
+boot ${boot-url6}${iso-dir}ncs5k-mini-x-6.2.25.iso || goto failed
+goto start
+
+:ncs5000-6.2.3
+echo
+echo Booting Skywarp Mini ISO 6.2.3 for ${initiator}
+boot ${boot-url}${iso-dir}ncs5k-mini-x-6.2.3.iso ||
+boot ${boot-url6}${iso-dir}ncs5k-mini-x-6.2.3.iso || goto failed
+goto start
+
+:ncs5000-gold
+echo
+echo Booting Skywarp Golden ISO 6.2.3 based for ${initiator}
+boot ${boot-url}${iso-dir}ncs5k-golden-x.iso-6.1.3.14I.pwariche-ISO ||
+boot ${boot-url6}${iso-dir}ncs5k-golden-x.iso-6.1.3.14I.pwariche-ISO || goto failed
+goto start
+
+:ncs5500-6.2.2
+echo
+echo Booting Fretta Mini ISO 6.2.2 for ${initiator}
+boot ${boot-url}${iso-dir}ncs5500-mini-x-6.2.2.iso ||
+boot ${boot-url6}${iso-dir}ncs5500-mini-x-6.2.2.iso || goto failed
+goto start
+
+:ncs5500-6.2.25
+echo
+echo Booting Fretta Mini ISO 6.2.25 for ${initiator}
+boot ${boot-url}${iso-dir}ncs5500-mini-x-6.2.25.iso ||
+boot ${boot-url6}${iso-dir}ncs5500-mini-x-6.2.25.iso || goto failed
+goto start
+
+:ncs5500-6.2.3
+echo
+echo Booting Fretta Mini ISO 6.2.3 for ${initiator}
+boot ${boot-url}${iso-dir}ncs5500-mini-x-6.2.3.iso ||
+boot ${boot-url6}${iso-dir}ncs5500-mini-x-6.3.3.iso || goto failed
+goto start
+
+:sunstone-disk
+echo Start XRV9K from disk 
+sanboot --no-describe --drive 0x80 || goto failed   
+goto start

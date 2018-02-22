@@ -1,0 +1,26 @@
+#!ipxe
+
+# Global variables used by all other iPXE scripts
+chain --autofree boot.ipxe.cfg ||
+
+# Boot <boot-url>/<boot-dir>/hostname-<hostname>.ipxe
+# if hostname DHCP variable is set and script is present
+isset ${hostname} && chain --replace --autofree ${boot-dir}hostname-${hostname}.ipxe ||
+
+# Boot <boot-url>/<boot-dir>/uuid-<UUID>.ipxe
+# SMBIOS UUID variable is not set on NCS platform
+#isset ${uuid} && chain --replace --autofree ${boot-dir}uuid-${uuid}.ipxe ||
+
+# Boot <boot-url>/<boot-dir>/mac-010203040506.ipxe if script is present
+chain --replace --autofree ${boot-dir}mac-${mac:hexraw}.ipxe ||
+
+# Boot <boot-url>/<boot-dir>/serial-FOC1947R143.ipxe if script is present
+isset ${serial} && chain --replace --autofree ${boot-dir}serial-${serial}.ipxe ||
+
+# Boot <boot-url>/<boot-dir>/pid-<product>.ipxe if script is present
+isset ${product} && chain --replace --autofree ${boot-dir}pid-${product}.ipxe ||
+
+# Boot <boot-url>/menu.ipxe script if all other options have been exhausted
+chain --replace --autofree ${menu-url6} ||
+chain --replace --autofree ${menu-url} ||
+
